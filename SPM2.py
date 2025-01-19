@@ -130,51 +130,51 @@ def valitse_lomake(vaihtoehdot):
         else:
             print("Valitsemaasi lomaketta ei ole olemassa.")
 
+if __name__ == '__main__':
+    while True:
+        valittu_ika = input("Kirjoita arvioitavan henkilön ikäryhmä (vauva/taapero, pikkulapsi, lapsi, "
+                            "nuori tai aikuinen): ").strip().lower()
 
-while True:
-    valittu_ika = input("Kirjoita arvioitavan henkilön ikäryhmä (vauva/taapero, pikkulapsi, lapsi, "
-                        "nuori tai aikuinen): ").strip().lower()
+        if valittu_ika == "vauva/taapero":
+            valittu_lomake = valitse_lomake(("vauvan arviointilomake", "taaperon arviointilomake", "huoltajan itsearviointi"))
+            print("Tämä toiminto ei ole vielä käytössä.\n")
 
-    if valittu_ika == "vauva/taapero":
-        valittu_lomake = valitse_lomake(("vauvan arviointilomake", "taaperon arviointilomake", "huoltajan itsearviointi"))
-        print("Tämä toiminto ei ole vielä käytössä.\n")
-
-        if valittu_lomake == "poistu":
-            break
-
-
-    elif valittu_ika == "pikkulapsi":
-        valittu_lomake = valitse_lomake(("kodin lomake", "varhaiskasvatuksen lomake"))
-        print("Tämä toiminto ei ole vielä käytössä.\n")
-
-        if valittu_lomake == "poistu":
-            break
+            if valittu_lomake == "poistu":
+                break
 
 
-    elif valittu_ika == "lapsi":
-        valittu_lomake = valitse_lomake(("kodin lomake", "koulun lomake"))
-        valittu_asteikko = valitse_asteikko()
-        valittu_luku = kysy_luku()
-        haettu_T_piste, haettu_persentiili = hae_lomakkeesta(valittu_ika, valittu_lomake, valittu_asteikko, valittu_luku)
-        print(f"Raakapistettä {valittu_luku} vastaava standardoitu T-piste on {haettu_T_piste} ja persentiili on"
-              f" {haettu_persentiili}.\n")
+        elif valittu_ika == "pikkulapsi":
+            valittu_lomake = valitse_lomake(("kodin lomake", "varhaiskasvatuksen lomake"))
+            print("Tämä toiminto ei ole vielä käytössä.\n")
 
-        if valittu_lomake == "poistu":
-            break
+            if valittu_lomake == "poistu":
+                break
 
 
-    elif valittu_ika == "nuori":
-        valittu_lomake = valitse_lomake(("kodin lomake", "koulun lomake", "itsearviointi"))
-        print("Tämä toiminto ei ole vielä käytössä.\n")
-        if valittu_lomake == "poistu":
-            break
+        elif valittu_ika == "lapsi":
+            valittu_lomake = valitse_lomake(("kodin lomake", "koulun lomake"))
+            valittu_asteikko = valitse_asteikko()
+            valittu_luku = kysy_luku()
+            haettu_T_piste, haettu_persentiili = hae_lomakkeesta(valittu_ika, valittu_lomake, valittu_asteikko, valittu_luku)
+            print(f"Raakapistettä {valittu_luku} vastaava standardoitu T-piste on {haettu_T_piste} ja persentiili on"
+                  f" {haettu_persentiili}.\n")
+
+            if valittu_lomake == "poistu":
+                break
 
 
-    elif valittu_ika == "aikuinen":
-        valittu_lomake = valitse_lomake(("itsearviointi", "läheisarviointi"))
-        print("Tämä toiminto ei ole vielä käytössä.\n")
-        if valittu_lomake == "poistu":
-            break
+        elif valittu_ika == "nuori":
+            valittu_lomake = valitse_lomake(("kodin lomake", "koulun lomake", "itsearviointi"))
+            print("Tämä toiminto ei ole vielä käytössä.\n")
+            if valittu_lomake == "poistu":
+                break
 
-    else:
-        print("Valitsemaasi ikäryhmää ei ole olemassa.\n")
+
+        elif valittu_ika == "aikuinen":
+            valittu_lomake = valitse_lomake(("itsearviointi", "läheisarviointi"))
+            print("Tämä toiminto ei ole vielä käytössä.\n")
+            if valittu_lomake == "poistu":
+                break
+
+        else:
+            print("Valitsemaasi ikäryhmää ei ole olemassa.\n")
