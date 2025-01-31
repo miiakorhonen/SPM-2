@@ -8,7 +8,7 @@ koulussa.
 Tällä ohjelmalla voidaan laskea raakapisteiden perusteella standardoidut T-pisteet ja 
 persentiilit sekä tehdä tulkinta tuloksista.
 
-Rajoitukset 26.10.2024: käytössä on vain Kodin ja Koulun kyselylomakkeen pisteytys 5-12-vuotiaille 
+Rajoitukset 26.1.2025: käytössä on vain Kodin ja Koulun kyselylomakkeen pisteytys 5-12-vuotiaille 
 lapsille, TOT-pisteitä ei voi laskea eikä yksittäisten kohtien tulkintaa (esim. yli- tai 
 aliherkkyys) voi tehdä.
 
