@@ -8,9 +8,8 @@ koulussa.
 Tällä ohjelmalla voidaan laskea raakapisteiden perusteella standardoidut T-pisteet ja 
 persentiilit sekä tehdä tulkinta tuloksista.
 
-Rajoitukset 26.1.2025: käytössä on vain Kodin ja Koulun kyselylomakkeen pisteytys 5-12-vuotiaille 
-lapsille, TOT-pisteitä ei voi laskea eikä yksittäisten kohtien tulkintaa (esim. yli- tai 
-aliherkkyys) voi tehdä.
+Rajoitukset 31.1.2025: käytössä on vain Kodin ja Koulun kyselylomakkeen pisteytys 5-12-vuotiaille 
+lapsille, eikä TOT-pisteitä voi laskea.
 
 Ensimmäiseksi valitaan arvioitavan henkilön ikä (vauva/taapero 4-30kk, pikkulapsi 2-5v, 
 lapsi 5-12v, nuori 12-21v tai aikuinen 21-87v).
@@ -19,6 +18,10 @@ lapsi 5-12v, nuori 12-21v tai aikuinen 21-87v).
 
 
 def kysy_luku():
+    """
+    Pyytää käyttäjältä numeron ja palauttaa sen, jos se on välillä 10–40.
+    :return:
+    """
     try:
         raakapisteet = int(input("Syötä raakapisteet: "))
     except ValueError:
@@ -31,6 +34,14 @@ def kysy_luku():
 
 
 def hae_lomakkeesta(ika, lomake, asteikko, luku):
+    """
+    Lukee CSV-tiedoston ja palauttaa T-arvon ja prosenttipisteen annetulle asteikolle ja numerolle.
+    :param ika:
+    :param lomake:
+    :param asteikko:
+    :param luku:
+    :return:
+    """
     lomakkeet = {
         "vauva/taapero": {
             "vauvan arviointilomake": "SPM_vauva.csv",
@@ -86,12 +97,16 @@ def hae_lomakkeesta(ika, lomake, asteikko, luku):
            if "-" in rivi[indeksit[asteikko]]:
                sarja = rivi[indeksit[asteikko]].split("-")
                if int(sarja[0]) <= luku <= int(sarja[1]):
-                   return rivi[-2], rivi[-1]
+                   return int(rivi[-2]), rivi[-1]
            elif luku == int(rivi[indeksit[asteikko]]):
-               return rivi[-2], rivi[-1]
+               return int(rivi[-2]), rivi[-1]
 
 
 def valitse_asteikko():
+    """
+    Pyytää käyttäjältä asteikon ja palauttaa sen, jos se on kelvollinen.
+    :return:
+    """
     vaihtoehdot = ("näkö", "VIS",
                    "kuulo", "HEA",
                    "tunto", "TOU",
@@ -121,6 +136,11 @@ def valitse_asteikko():
 
 
 def valitse_lomake(vaihtoehdot):
+    """
+    Kysyy käyttäjältä lomaketta ja palauttaa sen, jos se on kelvollinen.
+    :param vaihtoehdot:
+    :return:
+    """
     while True:
         lomake = input(f"Valitse täytetty lomake ({', '.join(vaihtoehdot)}) tai poistu: ").strip().lower()
         if lomake in vaihtoehdot:
@@ -156,8 +176,14 @@ if __name__ == '__main__':
             valittu_asteikko = valitse_asteikko()
             valittu_luku = kysy_luku()
             haettu_T_piste, haettu_persentiili = hae_lomakkeesta(valittu_ika, valittu_lomake, valittu_asteikko, valittu_luku)
+            if 40 < haettu_T_piste < 59:
+                tulkinta = "tyypilliseen reagointiin"
+            elif 60 < haettu_T_piste < 69:
+                tulkinta = "kohtalaisiin vaikeuksiin"
+            else:
+                tulkinta = "huomattaviin vaikeuksiin"
             print(f"Raakapistettä {valittu_luku} vastaava standardoitu T-piste on {haettu_T_piste} ja persentiili on"
-                  f" {haettu_persentiili}.\n")
+                  f" {haettu_persentiili}, joka viittaa {tulkinta}.\n")
 
             if valittu_lomake == "poistu":
                 break
