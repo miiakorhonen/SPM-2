@@ -9,7 +9,7 @@ Tällä ohjelmalla voidaan laskea raakapisteiden perusteella standardoidut T-pis
 persentiilit sekä tehdä tulkinta tuloksista.
 
 Rajoitukset 31.1.2025: käytössä on vain Kodin ja Koulun kyselylomakkeen pisteytys 5-12-vuotiaille 
-lapsille, eikä TOT-pisteitä voi laskea.
+lapsille, eikä ST-pisteitä voi laskea.
 
 Ensimmäiseksi valitaan arvioitavan henkilön ikä (vauva/taapero 4-30kk, pikkulapsi 2-5v, 
 lapsi 5-12v, nuori 12-21v tai aikuinen 21-87v).
@@ -150,7 +150,55 @@ def valitse_lomake(vaihtoehdot):
         else:
             print("Valitsemaasi lomaketta ei ole olemassa.")
 
-if __name__ == '__main__':
+
+def laske_st_pisteet():
+    """
+    Laskee ST-pisteet summaamalla yhteen näön (VIS), kuulon (HEA), tunnon (TOU),
+    maun ja hajun (T&S), kehotietoisuuden (BOD) sekä tasapainon ja liikeen (BAL) osa-alueiden raakapisteet.
+    :return:
+    """
+    # Kysy käyttäjältä jokaisen osa-alueen raakapisteet (6 kpl)
+    print("Aloitetaan näön (VIS) osa-alueesta.")
+    vis_pisteet = kysy_luku()
+    print("Seuraavaksi kuulon (HEA) osa-alue.")
+    hea_pisteet = kysy_luku()
+    print("Seuraavaksi tunnon (TOU) osa-alue.")
+    tou_pisteet = kysy_luku()
+    print("Seuraavaksi maun ja hajun (T&S) osa-alue.")
+    ts_pisteet = kysy_luku()
+    print("Seuraavaksi kehotietoisuuden (BOD) osa-alue.")
+    bod_pisteet = kysy_luku()
+    print("Viimeisenä tasapainon ja liikeen (BAL) osa-alue.")
+    bal_pisteet = kysy_luku()
+
+    # Laske ST-pisteet yhteenlaskemalla raakapisteet
+    st_pisteet = vis_pisteet + hea_pisteet + tou_pisteet + ts_pisteet + bod_pisteet + bal_pisteet
+
+    print(f"Osa-alueiden yhteenlasketut ST-pisteet ovat {st_pisteet}.\n")
+
+
+def tee_tulkinta(lomake, ika):
+    """
+    Kysyy käyttäjältä asteikon ja raakapisteet, ja tulkitsee tulokset.
+    :return:
+    """
+    asteikko = valitse_asteikko()
+    luku = kysy_luku()
+    t_piste, persentiili = hae_lomakkeesta(ika, lomake, asteikko, luku)
+    if 40 < t_piste < 59:
+        tulkinta = "tyypilliseen reagointiin"
+    elif 60 < t_piste < 69:
+        tulkinta = "kohtalaisiin vaikeuksiin"
+    else:
+        tulkinta = "huomattaviin vaikeuksiin"
+
+    print(f"Raakapistettä {luku} vastaava standardoitu T-piste on {t_piste} ja persentiili on"
+          f" {persentiili}, joka viittaa {tulkinta}.\n")
+
+
+
+
+def main():
     while True:
         valittu_ika = input("Kirjoita arvioitavan henkilön ikäryhmä (vauva/taapero, pikkulapsi, lapsi, "
                             "nuori tai aikuinen): ").strip().lower()
@@ -173,21 +221,20 @@ if __name__ == '__main__':
 
         elif valittu_ika == "lapsi":
             valittu_lomake = valitse_lomake(("kodin lomake", "koulun lomake"))
-            valittu_asteikko = valitse_asteikko()
-            valittu_luku = kysy_luku()
-            haettu_T_piste, haettu_persentiili = hae_lomakkeesta(valittu_ika, valittu_lomake, valittu_asteikko, valittu_luku)
-            if 40 < haettu_T_piste < 59:
-                tulkinta = "tyypilliseen reagointiin"
-            elif 60 < haettu_T_piste < 69:
-                tulkinta = "kohtalaisiin vaikeuksiin"
-            else:
-                tulkinta = "huomattaviin vaikeuksiin"
-            print(f"Raakapistettä {valittu_luku} vastaava standardoitu T-piste on {haettu_T_piste} ja persentiili on"
-                  f" {haettu_persentiili}, joka viittaa {tulkinta}.\n")
 
-            if valittu_lomake == "poistu":
-                break
+            while True:
+                vastaus = input(f"Lasketaanko ST-pisteet? ").strip().lower()
+                if vastaus == "kyllä":
+                    laske_st_pisteet()
+                    break
+                elif vastaus == "ei":
+                    tee_tulkinta(valittu_lomake, valittu_ika)
+                    break
+                else:
+                    print("Valitsemaasi vaihtoehtoa ei ole olemassa.")
 
+                if valittu_lomake == "poistu":
+                    break
 
         elif valittu_ika == "nuori":
             valittu_lomake = valitse_lomake(("kodin lomake", "koulun lomake", "itsearviointi"))
@@ -204,3 +251,7 @@ if __name__ == '__main__':
 
         else:
             print("Valitsemaasi ikäryhmää ei ole olemassa.\n")
+
+
+if __name__ == '__main__':
+    main()
