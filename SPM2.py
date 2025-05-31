@@ -8,8 +8,8 @@ koulussa.
 Tällä ohjelmalla voidaan laskea raakapisteiden perusteella standardoidut T-pisteet ja 
 persentiilit sekä tehdä tulkinta tuloksista.
 
-Rajoitukset 31.1.2025: käytössä on vain Kodin ja Koulun kyselylomakkeen pisteytys 5-12-vuotiaille 
-lapsille, eikä ST-pisteitä voi laskea.
+Rajoitukset 25.5.2025: käytössä on vain Kodin ja Koulun kyselylomakkeen pisteytys 5-12-vuotiaille 
+lapsille.
 
 Ensimmäiseksi valitaan arvioitavan henkilön ikä (vauva/taapero 4-30kk, pikkulapsi 2-5v, 
 lapsi 5-12v, nuori 12-21v tai aikuinen 21-87v).
@@ -196,8 +196,6 @@ def tee_tulkinta(lomake, ika):
           f" {persentiili}, joka viittaa {tulkinta}.\n")
 
 
-
-
 def main():
     while True:
         valittu_ika = input("Kirjoita arvioitavan henkilön ikäryhmä (vauva/taapero, pikkulapsi, lapsi, "
@@ -228,6 +226,7 @@ def main():
                     laske_st_pisteet()
                     break
                 elif vastaus == "ei":
+                    print("Tehdään siis tulkintaa yhden osa-alueen tuloksesta.\n")
                     tee_tulkinta(valittu_lomake, valittu_ika)
                     break
                 else:
