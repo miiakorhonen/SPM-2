@@ -1,2 +1,5 @@
 # Ignore .idea directory
 .idea/
+/log.html
+/output.xml
+/report.html

@@ -33,7 +33,7 @@ def kysy_luku():
             return
 
 
-def hae_lomakkeesta(ika, lomake, asteikko, luku):
+def hae_lomakkeesta(ika:str, lomake:str, asteikko:str, luku:int) -> tuple:
     """
     Lukee CSV-tiedoston ja palauttaa T-arvon ja prosenttipisteen annetulle asteikolle ja numerolle.
     :param ika:
