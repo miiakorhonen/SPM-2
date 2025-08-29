@@ -8,20 +8,23 @@ koulussa.
 Tällä ohjelmalla voidaan laskea raakapisteiden perusteella standardoidut T-pisteet ja 
 persentiilit sekä tehdä tulkinta tuloksista.
 
-Rajoitukset 25.5.2025: käytössä on vain Kodin ja Koulun kyselylomakkeen pisteytys 5-12-vuotiaille 
-lapsille.
+Rajoitukset 26.8.2025: käytössä on vain kodin ja koulun kyselylomakkeen pisteytys lapsille sekä
+kodin ja koulun kyselylomakkeen ja itsearvioinnin pisteytys nuorille. Näille voidaan laskea myös
+ST-pisteet.
 
 Ensimmäiseksi valitaan arvioitavan henkilön ikä (vauva/taapero 4-30kk, pikkulapsi 2-5v, 
 lapsi 5-12v, nuori 12-21v tai aikuinen 21-87v).
 """)
 
 
-
 def kysy_luku():
     """
-    Pyytää käyttäjältä numeron ja palauttaa sen, jos se on välillä 10–40.
-    :return:
+    Pyytää käyttäjältä syötteen, jonka on oltava kokonaisluku ja tarkistaa, että se on välillä 10–40.
+
+    Returns:
+        int: Raakapisteet, jos syöte on kelvollinen ja välillä 10–40.
     """
+
     try:
         raakapisteet = int(input("Syötä raakapisteet: "))
     except ValueError:
@@ -35,13 +38,21 @@ def kysy_luku():
 
 def hae_lomakkeesta(ika:str, lomake:str, asteikko:str, luku:int) -> tuple:
     """
-    Lukee CSV-tiedoston ja palauttaa T-arvon ja prosenttipisteen annetulle asteikolle ja numerolle.
-    :param ika:
-    :param lomake:
-    :param asteikko:
-    :param luku:
-    :return:
+    Lukee oikean CSV-tiedoston ikäryhmän ja lomakkeen perusteella, etsii annetulle asteikolle ja
+    raakapisteelle vastaavan standardoidun T-pisteen ja persentiilin sekä palauttaa ne.
+
+    Args:
+        ika (str): Arvioitavan henkilön ikäryhmä (esim. "lapsi").
+        lomake (str): Valittu lomaketyyppi ikäryhmälle (esim. "kodin lomake").
+        asteikko (str): Asteikon nimi tai lyhenne (esim. "näkö" tai "VIS").
+        luku (int): Raakapiste, jonka vastaavat standardiarvot haetaan.
+
+    Returns:
+        2-alkioinen tuple:
+            - int: Standardoitu T-piste
+            - str: Persentiili
     """
+
     lomakkeet = {
         "vauva/taapero": {
             "vauvan arviointilomake": "SPM_vauva.csv",
@@ -59,7 +70,7 @@ def hae_lomakkeesta(ika:str, lomake:str, asteikko:str, luku:int) -> tuple:
         "nuori": {
             "kodin lomake": "SPM_nuori_koti.csv",
             "koulun lomake": "SPM_nuori_koulu.csv",
-            "itsearvionti": "SPM_nuori_itsearviointi.csv"
+            "itsearviointi": "SPM_nuori_itsearviointi.csv"
         },
         "aikuinen": {
             "itsearviointi": "SPM_aikuinen_itsearviointi.csv",
@@ -83,7 +94,9 @@ def hae_lomakkeesta(ika:str, lomake:str, asteikko:str, luku:int) -> tuple:
         "suunnittelu ja oivallukset": 6,
         "PLN": 6,
         "sosiaalinen osallistuminen": 7,
-        "SOC": 7
+        "SOC": 7,
+        "aistijärjestelmän yhteispisteet": 8,
+        "ST": 8
     }
 
     tiedosto = lomakkeet[ika][lomake]
@@ -104,9 +117,13 @@ def hae_lomakkeesta(ika:str, lomake:str, asteikko:str, luku:int) -> tuple:
 
 def valitse_asteikko():
     """
-    Pyytää käyttäjältä asteikon ja palauttaa sen, jos se on kelvollinen.
-    :return:
+    Pyytää käyttäjältä asteikon nimen tai lyhenteen ja palauttaa sen, jos se kuuluu sallittuihin
+    vaihtoehtoihin.
+
+    Returns:
+        str: Asteikon nimi tai lyhenne, jos syöte on kelvollinen.
     """
+
     vaihtoehdot = ("näkö", "VIS",
                    "kuulo", "HEA",
                    "tunto", "TOU",
@@ -134,13 +151,18 @@ def valitse_asteikko():
             print("Valitsemaasi asteikkoa ei ole olemassa.")
 
 
-
 def valitse_lomake(vaihtoehdot):
     """
-    Kysyy käyttäjältä lomaketta ja palauttaa sen, jos se on kelvollinen.
-    :param vaihtoehdot:
-    :return:
+    Kysyy käyttäjältä lomakkeen nimen ja palauttaa sen, jos se kuuluu sallittuihin vaihtoehtoihin.
+
+    Args:
+        vaihtoehdot (tuple[str]): Tuple, joka sisältää sallitut lomakkeet
+                                    (esim. ("kodin lomake", "koulun lomake", "itsearviointi"))
+
+    Returns:
+        str: Valittu lomakkeen nimi, jos syöte on kelvollinen.
     """
+
     while True:
         lomake = input(f"Valitse täytetty lomake ({', '.join(vaihtoehdot)}) tai poistu: ").strip().lower()
         if lomake in vaihtoehdot:
@@ -151,14 +173,22 @@ def valitse_lomake(vaihtoehdot):
             print("Valitsemaasi lomaketta ei ole olemassa.")
 
 
-def laske_st_pisteet():
+def laske_st_pisteet(ika, lomake):
     """
-    Laskee ST-pisteet summaamalla yhteen näön (VIS), kuulon (HEA), tunnon (TOU),
-    maun ja hajun (T&S), kehotietoisuuden (BOD) sekä tasapainon ja liikeen (BAL) osa-alueiden raakapisteet.
-    :return:
+    Pyytää käyttäjältä syötteet jokaiselle kuudelle osa-alueelle (näkö/VIS, kuulo/HEA, tunto/TOU,
+    maku ja haju/T&S, kehotietoisuus/BOD, tasapaino ja liike/BAL), laskee summan eli ST-pisteet,
+    tulostaa sen ja kutsuu tee_tulkinta -funktiota saadakseen T-pisteen, persentiilin ja tulkinnan.
+
+    Args:
+        ika (str): Arvioitavan henkilön ikäryhmä (esim. "lapsi").
+        lomake (str): Valittu lomaketyyppi ikäryhmälle (esim. "kodin lomake").
+
+    Returns:
+        None: Funktio ei palauta arvoa, vaan tulostaa tuloksen ja kutsuu tee_tulkinta -funktiota.
     """
+
     # Kysy käyttäjältä jokaisen osa-alueen raakapisteet (6 kpl)
-    print("Aloitetaan näön (VIS) osa-alueesta.")
+    print("\nAloitetaan näön (VIS) osa-alueesta.")
     vis_pisteet = kysy_luku()
     print("Seuraavaksi kuulon (HEA) osa-alue.")
     hea_pisteet = kysy_luku()
@@ -171,19 +201,29 @@ def laske_st_pisteet():
     print("Viimeisenä tasapainon ja liikeen (BAL) osa-alue.")
     bal_pisteet = kysy_luku()
 
-    # Laske ST-pisteet yhteenlaskemalla raakapisteet
+    # Lasketaan ST-pisteet summaamalla raakapisteet
     st_pisteet = vis_pisteet + hea_pisteet + tou_pisteet + ts_pisteet + bod_pisteet + bal_pisteet
+    print(f"\nOsa-alueiden yhteenlasketut ST-pisteet ovat {st_pisteet}.")
 
-    print(f"Osa-alueiden yhteenlasketut ST-pisteet ovat {st_pisteet}.\n")
+    # Haetaan T-piste ja persentiili sekä tehdään tulkinta
+    tee_tulkinta(ika, lomake,"ST", st_pisteet)
 
 
-def tee_tulkinta(lomake, ika):
+def tee_tulkinta(ika, lomake, asteikko, luku):
     """
-    Kysyy käyttäjältä asteikon ja raakapisteet, ja tulkitsee tulokset.
-    :return:
+    Hakee raakapisteelle vastaavan T-pisteen ja persentiilin ja tulostaa sanallisen tulkinnan
+    (tyypillinen, kohtalainen tai huomattava vaikeus).
+
+    Args:
+        ika (str): Arvioitavan henkilön ikäryhmä (esim. "lapsi").
+        lomake (str): Valittu lomaketyyppi ikäryhmälle (esim. "kodin lomake").
+        asteikko (str): Asteikon nimi tai lyhenne (esim. "näkö" tai "VIS").
+        luku (int): Raakapiste, jonka perusteella tulos lasketaan.
+
+    Returns:
+        None: Funktio ei palauta arvoa, vaan tulostaa tuloksen.
     """
-    asteikko = valitse_asteikko()
-    luku = kysy_luku()
+
     t_piste, persentiili = hae_lomakkeesta(ika, lomake, asteikko, luku)
     if 40 < t_piste < 59:
         tulkinta = "tyypilliseen reagointiin"
@@ -223,11 +263,13 @@ def main():
             while True:
                 vastaus = input(f"Lasketaanko ST-pisteet? ").strip().lower()
                 if vastaus == "kyllä":
-                    laske_st_pisteet()
+                    laske_st_pisteet(valittu_ika, valittu_lomake)
                     break
                 elif vastaus == "ei":
                     print("Tehdään siis tulkintaa yhden osa-alueen tuloksesta.\n")
-                    tee_tulkinta(valittu_lomake, valittu_ika)
+                    valittu_asteikko = valitse_asteikko()
+                    syotetty_luku = kysy_luku()
+                    tee_tulkinta(valittu_ika, valittu_lomake, valittu_asteikko, syotetty_luku)
                     break
                 else:
                     print("Valitsemaasi vaihtoehtoa ei ole olemassa.")
@@ -237,7 +279,21 @@ def main():
 
         elif valittu_ika == "nuori":
             valittu_lomake = valitse_lomake(("kodin lomake", "koulun lomake", "itsearviointi"))
-            print("Tämä toiminto ei ole vielä käytössä.\n")
+
+            while True:
+                vastaus = input(f"Lasketaanko ST-pisteet? ").strip().lower()
+                if vastaus == "kyllä":
+                    laske_st_pisteet(valittu_ika, valittu_lomake)
+                    break
+                elif vastaus == "ei":
+                    print("Tehdään siis tulkintaa yhden osa-alueen tuloksesta.\n")
+                    valittu_asteikko = valitse_asteikko()
+                    syotetty_luku = kysy_luku()
+                    tee_tulkinta(valittu_ika, valittu_lomake, valittu_asteikko, syotetty_luku)
+                    break
+                else:
+                    print("Valitsemaasi vaihtoehtoa ei ole olemassa.")
+
             if valittu_lomake == "poistu":
                 break
 
